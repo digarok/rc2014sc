@@ -1,0 +1,69 @@
+REM Reference: "Three Ways of Looking At A Function""
+REM             by James Fuller
+REM             January 1983 (c) Creative Computing 
+
+REM ******************
+REM Define a function to plot in terms of Q
+100 DEF FN R(Q) = COS(7 * SIN(2*Q))
+
+REM ******************
+REM Function Increment
+200 I = 1
+REM X Scale Factor
+300 SX = 2
+REM Y Scale Factor
+350 SY = 2
+REM X Origin Displacement (-130, 130)
+400 OX = 0
+REM Y Origin Displacement (-90, 90)
+450 OY = 0
+
+REM ******************
+500 HGR : POKE -16302,0
+510 GOSUB 5000 : REM DRAW FIELD
+
+550 FOR N = 1 TO 5
+560 GOSUB 5100  : REM Make Flower Parms
+562 GOSUB 2000  : REM Grow Stem
+563 GOSUB 5200  : REM Random "friendly" Hcolor
+565 GOSUB 800   : REM Draw Flower
+570 NEXT N
+580 END
+
+REM POLAR PLOT
+800 FOR G = 0 TO 360 STEP I
+810   T = G / 57.29576
+820     X = FN R(T) * COS(T)
+830     Y = FN R(T) * SIN(T)
+840       XX =  X * (19 * SX) + F
+850       YY = -Y * (15 * SY) + E
+860         IF XX < 0 OR XX > 279 THEN 900
+870         IF YY < 0 OR YY > 191 THEN 900
+880       HPLOT F,E TO XX, YY
+900 NEXT G
+910 RETURN
+
+REM Grow Stem
+2000 HCOLOR = 1 : FOR Y = 191 TO E STEP -1 : HPLOT F-1,191 TO F+1,Y : NEXT Y
+2100 RETURN
+
+REM Make Field
+5000 HCOLOR=1
+5010 FOR X = 0 TO 279 
+5020 Y = 189 - INT(RND(1)*6) 
+5030 HPLOT X,Y TO X,191
+5040 NEXT X
+5050 RETURN
+
+REM Make Flower Parms
+5100 F = 10 + INT(RND(1)*260)
+5110 E = 40 + INT(RND(1)*80)
+5120 SX = RND(1) * 5 
+5130 IF SX < .5 OR SX > 3 THEN SX = 1.2
+5140 SY = SX
+5150 RETURN
+
+REM Random "friendly" Hcolor
+5200 FC = INT(rnd(1)*6) 
+5210 IF FC = 0 OR FC = 4 THEN FC=5
+5230 HCOLOR = FC
